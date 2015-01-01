@@ -13,7 +13,13 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,9 +33,11 @@ public class MainListActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_list);
+        Log.i(TAG,"inside");
         if (isNetworkAvailable()) {
             GetBlogPostsTask getBlogPostsTask = new GetBlogPostsTask();
             getBlogPostsTask.execute();
+            Log.i(TAG,"inside network available");
         }else {
             Toast.makeText(this,"Network not available", Toast.LENGTH_LONG).show();
         }
@@ -79,8 +87,29 @@ public class MainListActivity extends ListActivity {
                 HttpURLConnection connection= (HttpURLConnection)blogFeedUrl.openConnection();
                 connection.connect();
                 httpResponse=connection.getResponseCode();
+
                 if (httpResponse==HttpURLConnection.HTTP_OK){
 
+                    InputStream inputStream=connection.getInputStream();
+                    Reader reader=new InputStreamReader(inputStream);
+                    int contentLength=connection.getContentLength();
+                    char[] charArray= new char[contentLength];
+
+                    reader.read(charArray);
+
+                    String responseData=new String(charArray);
+
+                   JSONObject jsonResponse=new JSONObject(responseData);
+                    Log.i(TAG,"past jsonResponse");
+                    String status=jsonResponse.getString("status");
+                   Log.i(TAG,"past status");
+                    JSONArray jsonPosts=jsonResponse.getJSONArray("posts");
+                    for(int i=0;i<jsonPosts.length();i++){
+                        JSONObject jsonPost=jsonPosts.getJSONObject(i);
+                        String title=jsonPost.getString("title");
+
+                       Log.v(TAG,"post "+": "+title );
+                    }
                 }else{
                     Log.i(TAG,"Unsuccessful Code : "+httpResponse);
                 }
