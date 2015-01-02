@@ -5,6 +5,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="no_items">No items to display</string>
+    <string name="error_title">Oops Sorry</string>
+    <string name="error_message">There was an error getting the Data from the blog</string>
     
     <string-array name="android_names">
         <item>Android Beta</item>
